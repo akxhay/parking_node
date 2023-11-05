@@ -1,6 +1,6 @@
 const Joi = require('joi');
 
-const parkingLotSchema = Joi.object({
+const parkingLotSchemaValidator = Joi.object({
   name: Joi.string().required(),
   floors: Joi.array()
     .min(1)
@@ -16,4 +16,4 @@ const parkingLotSchema = Joi.object({
     .required(),
 });
 
-module.exports = parkingLotSchema;
+module.exports = parkingLotSchemaValidator;

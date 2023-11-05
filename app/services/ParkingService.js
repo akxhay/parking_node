@@ -1,9 +1,9 @@
-const ParkingLot = require("./models/ParkingLot");
-const ParkingSlot = require("./models/ParkingSlot");
-const Floor = require("./models/Floor");
+const ParkingLot = require("../data/models/ParkingLot");
+const ParkingSlot = require("../data/models/ParkingSlot");
+const Floor = require("../data/models/Floor");
 
-const sequelize = require("./config");
-const GenericConstants = require("./constants/GenericConstants");
+const sequelize = require("../config/Database");
+const GenericConstants = require("../data/constants/GenericConstants");
 
 module.exports = {
     findParkingLotById: async (id) => {
@@ -123,14 +123,29 @@ module.exports = {
     },
 
     deleteParkingLot: async (id) => {
-        const parkingLot = await ParkingLot.findByPk(id);
-
-        if (!parkingLot) {
-            throw new Error('Parking lot not found');
-        }
-
-        // Delete the parking lot
-        await parkingLot.destroy();
+        await sequelize.transaction(async (t) => {
+            const parkingLot = await ParkingLot.findByPk(id, {
+                include: [
+                    {
+                        model: Floor,
+                        as: 'floors',
+                        include: [
+                            {
+                                model: ParkingSlot,
+                                as: 'parkingSlots',
+                            },
+                        ],
+                    },
+                ],
+            });
+            for (const floor of parkingLot.floors) {
+                for (const parkingSlot of floor.parkingSlots) {
+                    await parkingSlot.destroy({transaction: t});
+                }
+                await floor.destroy({transaction: t});
+            }
+            await parkingLot.destroy({transaction: t});
+        })
     },
 
     findSuitableSlot: async (id, size) => {

@@ -1,5 +1,5 @@
-const CustomError = require("./error/CustomError");
-const ParkingService = require("./ParkingService");
+const CustomError = require("../data/error/CustomError");
+const ParkingService = require("../services/ParkingService");
 
 module.exports = {
     createParkingLot: async (parkingLotRequestDto) => {

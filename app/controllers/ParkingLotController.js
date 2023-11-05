@@ -1,10 +1,10 @@
-const genericConstants = require("../constants/GenericConstants");
-const parkingHandler = require("../parkingHandler");
-const parkingLotSchema = require("../validators/parkingLotSchema");
-const CustomError = require("../error/CustomError")
+const genericConstants = require("../data/constants/GenericConstants");
+const ParkingHandler = require("../handlers/ParkingHandler");
+const ParkingLotSchemaValidator = require("../validators/ParkingLotSchemaValidator");
+const CustomError = require("../data/error/CustomError")
 
 exports.validateParkingLot = (req, res, next) => {
-    const {error} = parkingLotSchema.validate(req.body);
+    const {error} = ParkingLotSchemaValidator.validate(req.body);
     if (error) {
         return res.status(400).send(error.details[0].message);
     }
@@ -18,9 +18,9 @@ exports.greet = (req, res) => {
 
 exports.createParkingLot = async (req, res) => {
     const parkingLotRequestDto = req.body;
-    console.log(`Inside createParkingLot, parkingLotDto: ${parkingLotDto}`);
+    console.log(`Inside createParkingLot, parkingLotRequestDto: ${parkingLotRequestDto}`);
     try {
-        const createdMessage = await parkingHandler.createParkingLot(parkingLotRequestDto);
+        const createdMessage = await ParkingHandler.createParkingLot(parkingLotRequestDto);
         res.status(200).json(createdMessage);
     } catch (err) {
         if (err instanceof CustomError) {
@@ -38,7 +38,7 @@ exports.fetchParkingLots = async (req, res) => {
     const pageSize = req.query.pageSize;
     console.log(`Inside fetchParkingLots, pageNumber: ${pageNumber}, pageSize: ${pageSize}`);
     try {
-        const response = await parkingHandler.fetchParkingLots(pageNumber, pageSize);
+        const response = await ParkingHandler.fetchParkingLots(pageNumber, pageSize);
         res.status(200).json(response);
     } catch (err) {
         if (err instanceof CustomError) {
@@ -54,8 +54,8 @@ exports.deleteParkingLot = async (req, res) => {
     const parkingLotId = req.params.parking_lot_id;
     console.log(`Inside deleteParkingLot, parkingLotId: ${parkingLotId}`);
     try {
-        const response = await parkingHandler.deleteParkingLot(parkingLotId);
-        res.status(200).json(response);
+        const response = await ParkingHandler.deleteParkingLot(parkingLotId);
+        res.status(200).send(response);
     } catch (err) {
         if (err instanceof CustomError) {
             res.status(err.statusCode).send(err.message);
@@ -68,10 +68,10 @@ exports.deleteParkingLot = async (req, res) => {
 
 exports.getParkingSlot = (req, res) => {
     const parkingLotRequestDto = req.body;
-    res.status(200).json(parkingHandler.getParkingSlot(0, 0, 0, 0));
+    res.status(200).json(ParkingHandler.getParkingSlot(0, 0, 0, 0));
 };
 
 exports.releaseParkingLot = (req, res) => {
     const parkingLotRequestDto = req.body;
-    res.status(200).json(parkingHandler.releaseParkingSlot(1, 1));
+    res.status(200).json(ParkingHandler.releaseParkingSlot(1, 1));
 };
