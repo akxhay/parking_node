@@ -7,9 +7,13 @@ Before you begin, ensure you have the following software installed:
 - [Node.js](https://nodejs.org/): Make sure you have Node.js installed. You can download it from [nodejs.org](https://nodejs.org/).
 - [npm](https://www.npmjs.com/): Node.js typically includes npm, but make sure it's available in your environment.
 
-### Installation
+## Database design ERD
+![parking_management.png](resources/parking_management.png)
 
-## Configuration
+## DDL queries
+![ddl.sql](resources/ddl.sql)
+
+## Installation
 
 1. Clone the repository:
 
@@ -40,9 +44,6 @@ Before you begin, ensure you have the following software installed:
     node app.js
     ```
 5. The application should start, and you can access the following APIs.
-
-## Database design ERD
-![parking_management.png](resources/parking_management.png)
 
 ## APIs
 
