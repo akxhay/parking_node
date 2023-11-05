@@ -1,0 +1,23 @@
+{
+  "name": "com.xharma.parking",
+  "version": "1.0.0",
+  "description": "Node js parking management system",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Akshay sharma",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "express": "^4.18.2",
+    "express-validator": "^7.0.1",
+    "ioredis": "^5.3.2",
+    "joi": "^17.11.0",
+    "pg": "^8.11.3",
+    "pg-hstore": "^2.3.4",
+    "redis": "^4.6.10",
+    "sequelize": "^6.34.0",
+    "sequelize-cli": "^6.6.2"
+  }
+}
