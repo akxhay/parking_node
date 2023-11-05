@@ -1,5 +1,7 @@
-const Model = require("./models/Model");
-const CustomError = require("./error/CustomError");
+const ParkingLot = require("./models/ParkingLot");
+const ParkingSlot = require("./models/ParkingSlot");
+const Floor = require("./models/Floor");
+
 const sequelize = require("./config");
 const GenericConstants = require("./constants/GenericConstants");
 
@@ -18,7 +20,7 @@ module.exports = {
         try {
             let createdParkingLot = null;
             return sequelize.transaction(async (t) => {
-                const lot = await Model.create({name}, {transaction: t});
+                const lot = await ParkingLot.create({name}, {transaction: t});
                 createdParkingLot = lot;
                 for (const floorData of floors) {
                     const floor = await Floor.create({
@@ -78,9 +80,14 @@ module.exports = {
                 {
                     model: Floor,
                     as: 'floors',
-                    include: ParkingSlot,
+                    include: [
+                        {
+                            model: ParkingSlot,
+                            as: 'parkingSlots',
+                        },
+                    ],
                 },
-            ]
+            ],
         });
     },
 

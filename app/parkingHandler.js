@@ -1,9 +1,4 @@
-const ParkingLot = require("./models/Model");
-const Floor = require("./models/Floor");
-const ParkingSlot = require("./models/ParkingSlot");
 const CustomError = require("./error/CustomError");
-const sequelize = require("./config");
-const GenericConstants = require("./constants/GenericConstants")
 const ParkingService = require("./ParkingService");
 
 module.exports = {
