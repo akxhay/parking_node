@@ -80,11 +80,10 @@ module.exports = {
     },
 
     releaseParkingSlot: async (id, slotId) => {
-        try {
-            return "Parking slot freed successfully";
-        } catch (error) {
-            log.error("Error releasing parking slot:", error);
-            throw new Error("Error releasing parking slot");
+        const count = await ParkingService.releaseParkingLot(id, slotId);
+        if (count === 0) {
+            throw new CustomError("Parking Slot could not be released", 500);
         }
+        return "Parking slot freed successfully";
     },
 };

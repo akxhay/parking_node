@@ -72,7 +72,7 @@ exports.getParkingSlot = async (req, res) => {
     const numberPlate = req.headers["number-plate"]
     const arrivedAt = req.headers["arrived-at"]
 
-    console.log(`Inside deleteParkingLot, parking_lot_id: ${parking_lot_id}, size: ${size}, numberPlate: ${numberPlate}, arrivedAt: ${arrivedAt}`);
+    console.log(`Inside getParkingSlot, parking_lot_id: ${parking_lot_id}, size: ${size}, numberPlate: ${numberPlate}, arrivedAt: ${arrivedAt}`);
 
     try {
         const response = await ParkingHandler.getParkingSlot(parking_lot_id, size, numberPlate, arrivedAt);
@@ -87,7 +87,19 @@ exports.getParkingSlot = async (req, res) => {
     }
 };
 
-exports.releaseParkingLot = (req, res) => {
-    const parkingLotRequestDto = req.body;
-    res.status(200).json(ParkingHandler.releaseParkingSlot(1, 1));
+exports.releaseParkingLot = async (req, res) => {
+    const parking_lot_id = req.params.parking_lot_id;
+    const slot_id = req.params.slot_id;
+    console.log(`Inside releaseParkingLot, parking_lot_id: ${parking_lot_id}, slot_id: ${slot_id}`);
+    try {
+        const response = await ParkingHandler.releaseParkingSlot(parking_lot_id, slot_id);
+        res.status(200).send(response);
+    } catch (err) {
+        if (err instanceof CustomError) {
+            res.status(err.statusCode).send(err.message);
+        } else {
+            console.log(err);
+            res.status(500).json({error: 'Internal Server Error'});
+        }
+    }
 };

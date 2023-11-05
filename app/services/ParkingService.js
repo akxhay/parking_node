@@ -211,40 +211,17 @@ module.exports = {
     },
 
     releaseParkingLot: async (id, slotId) => {
-        try {
-            log.info(`Releasing parking slot with id: ${id}, slotId: ${slotId}`);
-            const parkingSlot = await parkingSlotRepository.findById(slotId);
-            if (!parkingSlot) {
-                log.info('Invalid Slot');
-                return 0;
-            }
-            if (parkingSlot.floor.parkingLot.id !== id) {
-                log.info('Slot does not belong to parking lot');
-                return 0;
-            }
-            return unPark(slotId);
-        } catch (error) {
-            log.error('Error releasing parking slot:', error);
-            throw new Error('Error releasing parking slot');
+        const parkingLot = await ParkingLot.findByPk(id);
+        if (!parkingLot) {
+            return 0;
         }
-    },
-
-    unPark: async (id) => {
-        try {
-            return parkingSlotRepository.unPark(id);
-        } catch (error) {
-            log.error('Error marking parking as unoccupied:', error);
-            throw new Error('Error marking parking as unoccupied');
-        }
+        const [updatedRowsCount] = await ParkingSlot.update({
+            occupied: false, numberPlate: null, arrivedAt: null,
+        }, {
+            where: {id: slotId},
+        });
+        return updatedRowsCount;
     },
 
 
-    parkInfo: async (numberPlate) => {
-        try {
-            return parkingSlotRepository.findByNumberPlate(numberPlate);
-        } catch (error) {
-            log.error('Error getting parking slot information:', error);
-            throw new Error('Error getting parking slot information');
-        }
-    },
 };
