@@ -66,9 +66,25 @@ exports.deleteParkingLot = async (req, res) => {
     }
 };
 
-exports.getParkingSlot = (req, res) => {
-    const parkingLotRequestDto = req.body;
-    res.status(200).json(ParkingHandler.getParkingSlot(0, 0, 0, 0));
+exports.getParkingSlot = async (req, res) => {
+    const parking_lot_id = req.params.parking_lot_id;
+    const size = req.params.size;
+    const numberPlate = req.headers["number-plate"]
+    const arrivedAt = req.headers["arrived-at"]
+
+    console.log(`Inside deleteParkingLot, parking_lot_id: ${parking_lot_id}, size: ${size}, numberPlate: ${numberPlate}, arrivedAt: ${arrivedAt}`);
+
+    try {
+        const response = await ParkingHandler.getParkingSlot(parking_lot_id, size, numberPlate, arrivedAt);
+        res.status(200).send(response);
+    } catch (err) {
+        if (err instanceof CustomError) {
+            res.status(err.statusCode).send(err.message);
+        } else {
+            console.log(err);
+            res.status(500).json({error: 'Internal Server Error'});
+        }
+    }
 };
 
 exports.releaseParkingLot = (req, res) => {

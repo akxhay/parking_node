@@ -3,7 +3,7 @@ const GenericConstants = {
     smallSlots: 's',
     mediumSlots: 'm',
     largeSlots: 'l',
-    xlargeSlots: 'xl'
+    xlargeSlots: 'xl',
 };
 
 

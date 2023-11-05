@@ -1,9 +1,27 @@
 const ParkingLot = require("../data/models/ParkingLot");
 const ParkingSlot = require("../data/models/ParkingSlot");
 const Floor = require("../data/models/Floor");
-
+const {Op} = require('sequelize');
 const sequelize = require("../config/Database");
 const GenericConstants = require("../data/constants/GenericConstants");
+
+
+const getParkingSlot = async (parkingLotId, slotType) => {
+    return await ParkingSlot.findOne({
+        where: {
+            floorId: {
+                [Op.in]: [
+                    sequelize.literal(`SELECT id FROM floors WHERE parking_lot_id = ${parkingLotId}`),
+                ],
+            },
+            slotType,
+            occupied: false,
+        },
+        order: [['id', 'ASC']],
+    });
+};
+
+
 
 module.exports = {
     findParkingLotById: async (id) => {
@@ -148,33 +166,48 @@ module.exports = {
         })
     },
 
-    findSuitableSlot: async (id, size) => {
-        try {
-            log.info(`Finding parking slot with id: ${id}, size: ${size}`);
-            let parkingSlot;
+    findByNumberPlate: async (numberPlate) => {
+        return await ParkingSlot.findOne({
+            where: {
+                numberPlate: numberPlate,
+            }
+        });
+    },
+
+    findFloorById: async (id) => {
+        return await Floor.findByPk(id);
+    },
+
+    findSuitableSlot: async (parkingLotId, size) => {
+        let parkingSlot;
             switch (size) {
                 case 's':
-                    parkingSlot = await parkingSlotRepository.findAvailableSots(id, 's');
-                    if (parkingSlot) return parkingSlotEntityToAvailableDto(parkingSlot);
-                    break;
+                    parkingSlot = await getParkingSlot(parkingLotId, "s");
+                    if (parkingSlot) return parkingSlot;
                 case 'm':
-                    parkingSlot = await parkingSlotRepository.findAvailableSots(id, 'm');
-                    if (parkingSlot) return parkingSlotEntityToAvailableDto(parkingSlot);
-                    break;
+                    parkingSlot = await getParkingSlot(parkingLotId, "m");
+                    if (parkingSlot) return parkingSlot;
                 case 'l':
-                    parkingSlot = await parkingSlotRepository.findAvailableSots(id, 'l');
-                    if (parkingSlot) return parkingSlotEntityToAvailableDto(parkingSlot);
-                    break;
+                    parkingSlot = await getParkingSlot(parkingLotId, "l");
+                    if (parkingSlot) return parkingSlot;
                 case 'xl':
-                    parkingSlot = await parkingSlotRepository.findAvailableSots(id, 'xl');
-                    if (parkingSlot) return parkingSlotEntityToAvailableDto(parkingSlot);
-                    break;
+                    parkingSlot = await getParkingSlot(parkingLotId, "xl");
+                    if (parkingSlot) return parkingSlot;
             }
             return null;
-        } catch (error) {
-            log.error('Error finding suitable parking slot:', error);
-            throw new Error('Error finding suitable parking slot');
-        }
+    },
+    park: async (id, numberPlate, arrivedAt) => {
+        const [updatedRowsCount] = await ParkingSlot.update(
+            {
+                occupied: true,
+                numberPlate: numberPlate,
+                arrivedAt: arrivedAt,
+            },
+            {
+                where: {id: id},
+            }
+        );
+        return updatedRowsCount;
     },
 
     releaseParkingLot: async (id, slotId) => {
@@ -205,14 +238,6 @@ module.exports = {
         }
     },
 
-    park: async (id, numberPlate, arrivedAt) => {
-        try {
-            return parkingSlotRepository.park(id, numberPlate, arrivedAt);
-        } catch (error) {
-            log.error('Error parking a car:', error);
-            throw new Error('Error parking a car');
-        }
-    },
 
     parkInfo: async (numberPlate) => {
         try {

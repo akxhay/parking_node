@@ -17,7 +17,7 @@ const ParkingSlot = sequelize.define(
             type: DataTypes.INTEGER,
             allowNull: false,
         },
-        isOccupied: {
+        occupied: {
             type: DataTypes.BOOLEAN,
             allowNull: false,
             defaultValue: false,

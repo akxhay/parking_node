@@ -1,6 +1,7 @@
 const CustomError = require("../data/error/CustomError");
 const ParkingService = require("../services/ParkingService");
-
+const validSizes = ["s", "m", "l", "xl"];
+const validDate = /^\d*$/;
 module.exports = {
     createParkingLot: async (parkingLotRequestDto) => {
         const existed = await ParkingService.findParkingLotByName(parkingLotRequestDto.name)
@@ -34,12 +35,48 @@ module.exports = {
     },
 
     getParkingSlot: async (id, size, numberPlate, arrivedAt) => {
-        try {
-            return "availableParkingSlotDto";
-        } catch (error) {
-            log.error("Error handling parking slot:", error);
-            throw new Error("Error handling parking slot");
+        if (!numberPlate) {
+            throw new CustomError("Car cannot be parked without number plate", 400);
         }
+
+        if (!arrivedAt) {
+            throw new CustomError("Arrived time is not present in header", 400);
+        }
+        if (!validDate.test(arrivedAt)) {
+            throw new CustomError("Arrived time is invalid", 400);
+        }
+        if (!validSizes.includes(size)) {
+            throw new CustomError("size should in " + validSizes, 400);
+        }
+        const numberPlateParkingSlot = await ParkingService.findByNumberPlate(numberPlate);
+        if (numberPlateParkingSlot) {
+            const floor = await ParkingService.findFloorById(numberPlateParkingSlot.floorId);
+
+            const floorName = floor.floorName;
+            const parkingLot = await ParkingService.findParkingLotById(floor.parkingLotId);
+            const parkingLotName = parkingLot.name;
+            const slotType = numberPlateParkingSlot.slotType;
+            const slotNumber = numberPlateParkingSlot.slotNumber;
+
+            throw new CustomError("Car is already parked \n" +
+                "Please find parking information below \n" +
+                "Parking Lot Name: " + parkingLotName + "\n" +
+                "floor Name: " + floorName + "\n" +
+                "Slot Type: " + slotType + "\n" +
+                "Slot Number: " + slotNumber, 500);
+        }
+        const findSuitableSlot = await ParkingService.findSuitableSlot(id, size);
+        if (!findSuitableSlot) {
+            throw new CustomError("Parking Slot is not available", 500);
+        }
+        const count = await ParkingService.park(findSuitableSlot.id, numberPlate, arrivedAt);
+        if (count === 0) {
+            throw new CustomError("Car cannot be parked at this moment, Please try again", 500);
+        }
+        findSuitableSlot.numberPlate = numberPlate
+        findSuitableSlot.arrivedAt = arrivedAt
+        findSuitableSlot.occupied = true
+        return findSuitableSlot;
     },
 
     releaseParkingSlot: async (id, slotId) => {
