@@ -6,6 +6,10 @@ const sequelize = require("./config");
 const GenericConstants = require("./constants/GenericConstants");
 
 module.exports = {
+    findParkingLotById: async (id) => {
+        // Check if the parking lot already exists
+        return await ParkingLot.findByPk(id);
+    },
     findParkingLotByName: async (name) => {
         // Check if the parking lot already exists
         return await ParkingLot.findOne({
@@ -17,62 +21,60 @@ module.exports = {
 
     createParkingLot: async (parkingLotRequestDto) => {
         const {name, floors} = parkingLotRequestDto;
-        try {
-            let createdParkingLot = null;
-            return sequelize.transaction(async (t) => {
-                const lot = await ParkingLot.create({name}, {transaction: t});
-                createdParkingLot = lot;
-                for (const floorData of floors) {
-                    const floor = await Floor.create({
-                        name: floorData.name,
-                        parkingLotId: lot.id,
+
+        let createdParkingLot = null;
+        return sequelize.transaction(async (t) => {
+            const lot = await ParkingLot.create({name}, {transaction: t});
+            createdParkingLot = lot;
+            for (const floorData of floors) {
+                const floor = await Floor.create({
+                    name: floorData.name,
+                    parkingLotId: lot.id,
+                }, {transaction: t});
+
+                for (let i = 0; i < floorData["smallSlots"]; i++) {
+                    await ParkingSlot.create({
+                        isOccupied: false,
+                        slotNumber: i + 1,
+                        floorId: floor.id,
+                        slotType: GenericConstants.smallSlots,
                     }, {transaction: t});
-
-                    for (let i = 0; i < floorData["smallSlots"]; i++) {
-                        await ParkingSlot.create({
-                            isOccupied: false,
-                            slotNumber: i + 1,
-                            floorId: floor.id,
-                            slotType: GenericConstants.smallSlots,
-                        }, {transaction: t});
-                    }
-                    for (let i = 0; i < floorData["mediumSlots"]; i++) {
-                        await ParkingSlot.create({
-                            isOccupied: false,
-                            slotNumber: i + 1,
-                            floorId: floor.id,
-                            slotType: GenericConstants.mediumSlots,
-                        }, {transaction: t});
-                    }
-                    for (let i = 0; i < floorData["largeSlots"]; i++) {
-                        await ParkingSlot.create({
-                            isOccupied: false,
-                            slotNumber: i + 1,
-                            floorId: floor.id,
-                            slotType: GenericConstants.largeSlots,
-                        }, {transaction: t});
-                    }
-                    for (let i = 0; i < floorData["xlargeSlots"]; i++) {
-                        await ParkingSlot.create({
-                            isOccupied: false,
-                            slotNumber: i + 1,
-                            floorId: floor.id,
-                            slotType: GenericConstants.xlargeSlots,
-                        }, {transaction: t});
-                    }
-
+                }
+                for (let i = 0; i < floorData["mediumSlots"]; i++) {
+                    await ParkingSlot.create({
+                        isOccupied: false,
+                        slotNumber: i + 1,
+                        floorId: floor.id,
+                        slotType: GenericConstants.mediumSlots,
+                    }, {transaction: t});
+                }
+                for (let i = 0; i < floorData["largeSlots"]; i++) {
+                    await ParkingSlot.create({
+                        isOccupied: false,
+                        slotNumber: i + 1,
+                        floorId: floor.id,
+                        slotType: GenericConstants.largeSlots,
+                    }, {transaction: t});
+                }
+                for (let i = 0; i < floorData["xlargeSlots"]; i++) {
+                    await ParkingSlot.create({
+                        isOccupied: false,
+                        slotNumber: i + 1,
+                        floorId: floor.id,
+                        slotType: GenericConstants.xlargeSlots,
+                    }, {transaction: t});
                 }
 
-            }).then(() => {
-                console.log('Transaction was successful');
-                return createdParkingLot;
-            }).catch((error) => {
-                console.error('Transaction failed:', error);
-                throw error; // Re-throw the error to be handled by the error handler
-            });
-        } catch (error) {
+            }
+
+        }).then(() => {
+            console.log('Transaction was successful');
+            return createdParkingLot;
+        }).catch((error) => {
+            console.error('Transaction failed:', error);
             throw error; // Re-throw the error to be handled by the error handler
-        }
+        });
+
     },
     fetchParkingLotById: async (id) => {
         return await ParkingLot.findByPk(id, {
@@ -91,33 +93,44 @@ module.exports = {
         });
     },
 
-    fetchParkingLots: async (pageRequest) => {
-        try {
-            log.info('Fetching parking lots');
-            const parkingLots = await parkingRepository.findAll(pageRequest);
-            return new Page(
-                parkingLots,
-                parkingLots.length,
-                parkingLots.length,
-                parkingLots.map(EntityDtoConverter.parkingLotEntityToDto)
-            );
-        } catch (error) {
-            log.error('Error fetching parking lots:', error);
-            throw new Error('Error fetching parking lots');
-        }
+    fetchParkingLots: async (pageNumber, pageSize) => {
+        const offset = (pageNumber) * pageSize;
+
+        const {count, rows} = await ParkingLot.findAndCountAll({
+            offset,
+            limit: pageSize,
+            include: [
+                {
+                    model: Floor,
+                    as: 'floors',
+                    include: [
+                        {
+                            model: ParkingSlot,
+                            as: 'parkingSlots',
+                        },
+                    ],
+                },
+            ],
+            order: [['id', 'DESC']],
+        });
+        const parkingLotCount = await ParkingLot.count();
+
+        return {
+            total: parkingLotCount,
+            parkingLots: rows,
+        };
+
     },
 
     deleteParkingLot: async (id) => {
-        try {
-            log.info(`Deleting parking lot with id: ${id}`);
-            const parkingLot = await parkingRepository.findById(id);
-            if (!parkingLot) return false;
-            await parkingRepository.delete(parkingLot);
-            return true;
-        } catch (error) {
-            log.error('Error deleting parking lot:', error);
-            throw new Error('Error deleting parking lot');
+        const parkingLot = await ParkingLot.findByPk(id);
+
+        if (!parkingLot) {
+            throw new Error('Parking lot not found');
         }
+
+        // Delete the parking lot
+        await parkingLot.destroy();
     },
 
     findSuitableSlot: async (id, size) => {

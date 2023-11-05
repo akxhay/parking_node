@@ -18,6 +18,7 @@ exports.greet = (req, res) => {
 
 exports.createParkingLot = async (req, res) => {
     const parkingLotRequestDto = req.body;
+    console.log(`Inside createParkingLot, parkingLotDto: ${parkingLotDto}`);
     try {
         const createdMessage = await parkingHandler.createParkingLot(parkingLotRequestDto);
         res.status(200).json(createdMessage);
@@ -32,15 +33,37 @@ exports.createParkingLot = async (req, res) => {
 
 };
 
-exports.fetchParkingLots = (req, res) => {
-    const parkingLotRequestDto = req.body;
-    console.log("Inside createParkingLot, parkingLotDto:", parkingLotRequestDto);
-    res.status(200).json(parkingHandler.fetchParkingLots(0, 0));
+exports.fetchParkingLots = async (req, res) => {
+    const pageNumber = req.query.pageNumber;
+    const pageSize = req.query.pageSize;
+    console.log(`Inside fetchParkingLots, pageNumber: ${pageNumber}, pageSize: ${pageSize}`);
+    try {
+        const response = await parkingHandler.fetchParkingLots(pageNumber, pageSize);
+        res.status(200).json(response);
+    } catch (err) {
+        if (err instanceof CustomError) {
+            res.status(err.statusCode).send(err.message);
+        } else {
+            console.log(err);
+            res.status(500).json({error: 'Internal Server Error'});
+        }
+    }
 };
 
-exports.deleteParkingLot = (req, res) => {
-    const parkingLotRequestDto = req.body;
-    res.status(200).json(parkingHandler.deleteParkingLot(1));
+exports.deleteParkingLot = async (req, res) => {
+    const parkingLotId = req.params.parking_lot_id;
+    console.log(`Inside deleteParkingLot, parkingLotId: ${parkingLotId}`);
+    try {
+        const response = await parkingHandler.deleteParkingLot(parkingLotId);
+        res.status(200).json(response);
+    } catch (err) {
+        if (err instanceof CustomError) {
+            res.status(err.statusCode).send(err.message);
+        } else {
+            console.log(err);
+            res.status(500).json({error: 'Internal Server Error'});
+        }
+    }
 };
 
 exports.getParkingSlot = (req, res) => {
