@@ -42,7 +42,7 @@ Before you begin, ensure you have the following software installed:
 5. The application should start, and you can access the following APIs.
 
 ## Database design ERD
-![parking_management.png](src/main/resources/static/parking_management.png)
+![parking_management.png](resources/parking_management.png)
 
 ## APIs
 
