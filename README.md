@@ -25,7 +25,8 @@ Before you begin, ensure you have the following software installed:
 
 3. Configure PostgresSQL Database:
    * Create a PostgresSQL database with your preferred name (e.g., parking_management).
-    * Update the database connection properties in app/config/database.js:
+   * Update the database connection properties in [Database.js](app/config/Database.js)
+     :
 
    ```shell
    const databaseName = "parking_management"
@@ -35,6 +36,15 @@ Before you begin, ensure you have the following software installed:
    const port = 5432
    const dialect = "postgres"
    ```
+
+4. Configure Redis:
+   * Update the redis connection properties in [Redis.js](app/config/Redis.js):
+
+   ```shell
+   const host = "127.0.0.1"
+   const port = 6379
+   ```
+
 
 4. Build and Run
    ```shell
