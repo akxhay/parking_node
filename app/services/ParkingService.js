@@ -36,6 +36,10 @@ module.exports = {
             },
         });
     },
+    findParkingSlotById: async (id) => {
+        // Check if the parking lot already exists
+        return await ParkingSlot.findByPk(id);
+    },
 
     createParkingLot: async (parkingLotRequestDto) => {
         const {name, floors} = parkingLotRequestDto;
