@@ -1,6 +1,4 @@
 const redis = require("../config/Redis");
-
-const sizes = ['s', 'm', 'l', 'xl'];
 const createParkingLot = (parkingLotId, size, slotId) => {
     const queue = `parkingSlotQueue:${parkingLotId}:${size}`;
     redis.sadd(queue, slotId);

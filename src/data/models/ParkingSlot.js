@@ -1,5 +1,5 @@
 const {DataTypes} = require("sequelize");
-const sequelize = require("../../config/Database"); // Import your Sequelize instance
+const sequelize = require("../../config/Database");
 
 const ParkingSlot = sequelize.define(
     "ParkingSlot",
@@ -7,7 +7,7 @@ const ParkingSlot = sequelize.define(
         id: {
             type: DataTypes.INTEGER,
             primaryKey: true,
-            autoIncrement: true, // This line makes id auto-increment
+            autoIncrement: true,
         },
         slotType: {
             type: DataTypes.STRING,
@@ -31,7 +31,7 @@ const ParkingSlot = sequelize.define(
         },
     },
     {
-        timestamps: false, // Disable automatic timestamps
+        timestamps: false,
     }
 );
 

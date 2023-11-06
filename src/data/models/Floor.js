@@ -1,6 +1,6 @@
 const { DataTypes } = require("sequelize");
-const sequelize = require("../../config/Database"); // Import your Sequelize instance
-const ParkingSlot = require("./ParkingSlot"); // Import the Floor model
+const sequelize = require("../../config/Database");
+const ParkingSlot = require("./ParkingSlot");
 
 const Floor = sequelize.define(
   "Floor",
@@ -8,22 +8,21 @@ const Floor = sequelize.define(
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
-      autoIncrement: true, // This line makes id auto-increment
+      autoIncrement: true,
     },
     name: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    // Add other fields specific to Floor here
   },
   {
-    timestamps: false, // Disable automatic timestamps
+    timestamps: false,
   }
 );
 
 Floor.hasMany(ParkingSlot, {
     as: 'parkingSlots',
-    foreignKey: 'floorId', // Make sure this matches the actual foreign key in your database
+    foreignKey: 'floorId',
     onDelete: 'CASCADE',
 });
 module.exports = Floor;

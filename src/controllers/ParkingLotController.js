@@ -8,7 +8,7 @@ exports.validateParkingLot = (req, res, next) => {
     if (error) {
         return res.status(400).send(error.details[0].message);
     }
-    next(); // Continue to the next middleware or route handler if validation passes
+    next();
 };
 
 exports.greet = (req, res) => {

@@ -25,11 +25,9 @@ const getParkingSlot = async (parkingLotId, slotType) => {
 
 module.exports = {
     findParkingLotById: async (id) => {
-        // Check if the parking lot already exists
         return await ParkingLot.findByPk(id);
     },
     findParkingLotByName: async (name) => {
-        // Check if the parking lot already exists
         return await ParkingLot.findOne({
             where: {
                 name: name,
@@ -37,7 +35,6 @@ module.exports = {
         });
     },
     findParkingSlotById: async (id) => {
-        // Check if the parking lot already exists
         return await ParkingSlot.findByPk(id);
     },
 
@@ -94,7 +91,7 @@ module.exports = {
             return createdParkingLot;
         }).catch((error) => {
             console.error('Transaction failed:', error);
-            throw error; // Re-throw the error to be handled by the error handler
+            throw error;
         });
 
     },

@@ -1,6 +1,6 @@
 const {DataTypes} = require("sequelize");
-const sequelize = require("../../config/Database"); // Import your Sequelize instance
-const Floor = require("./Floor"); // Import the Floor model
+const sequelize = require("../../config/Database");
+const Floor = require("./Floor");
 
 const ParkingLot = sequelize.define(
     "ParkingLot",
@@ -8,7 +8,7 @@ const ParkingLot = sequelize.define(
         id: {
             type: DataTypes.INTEGER,
             primaryKey: true,
-            autoIncrement: true, // This line makes id auto-increment
+            autoIncrement: true,
         },
         name: {
             type: DataTypes.STRING,
@@ -17,7 +17,7 @@ const ParkingLot = sequelize.define(
         },
     },
     {
-        timestamps: false, // Disable automatic timestamps
+        timestamps: false,
     }
 );
 ParkingLot.hasMany(Floor, {

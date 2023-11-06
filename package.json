@@ -4,7 +4,7 @@
   "description": "Node js parking management system",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha"
   },
   "author": "Akshay sharma",
   "license": "ISC",
@@ -19,5 +19,9 @@
     "redis": "^4.6.10",
     "sequelize": "^6.34.0",
     "sequelize-cli": "^6.6.2"
+  },
+  "devDependencies": {
+    "chai": "^4.3.10",
+    "mocha": "^10.2.0"
   }
 }

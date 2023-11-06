@@ -12,7 +12,7 @@ const sequelize = new Sequelize(databaseName, userName, password, {
     port: port,
     dialect: dialect,
     define: {
-        underscored: true, // Add this option to use lowercase table names
+        underscored: true,
     },
     logging: console.log,
 });
