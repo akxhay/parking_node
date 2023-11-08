@@ -41,7 +41,7 @@ module.exports = {
             throw new CustomError("pageSize should be greater than 0")
         }
         if (pageNumber == null || pageNumber < 0) {
-            throw new CustomError("pageSize should be greater than 0")
+            throw new CustomError("pageSize should be greater than or equals to 0")
         }
         const {total, parkingLots} = await ParkingService.fetchParkingLots(
             pageNumber, pageSize

@@ -179,24 +179,6 @@ module.exports = {
         return await Floor.findByPk(id);
     },
 
-    findSuitableSlot: async (parkingLotId, size) => {
-        let parkingSlot;
-            switch (size) {
-                case 's':
-                    parkingSlot = await getParkingSlot(parkingLotId, "s");
-                    if (parkingSlot) return parkingSlot;
-                case 'm':
-                    parkingSlot = await getParkingSlot(parkingLotId, "m");
-                    if (parkingSlot) return parkingSlot;
-                case 'l':
-                    parkingSlot = await getParkingSlot(parkingLotId, "l");
-                    if (parkingSlot) return parkingSlot;
-                case 'xl':
-                    parkingSlot = await getParkingSlot(parkingLotId, "xl");
-                    if (parkingSlot) return parkingSlot;
-            }
-            return null;
-    },
     park: async (id, numberPlate, arrivedAt) => {
         const [updatedRowsCount] = await ParkingSlot.update(
             {
