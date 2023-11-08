@@ -57,24 +57,6 @@ Before you begin, ensure you have the following software installed:
 
 ## APIs
 
-### Create 1200 Dummy parking lots
-
-```shell
-curl --location 'http://localhost:8080/parking/lot/dummy' \
---header 'Accept: application/json' \
---header 'Content-Type: application/json' \
---data '{
-  "parkingLots": 1200,
-  "floorsPerParkingLot": 3,
-  "smallSlotsPerFloor": 100,
-  "mediumSlotsPerFloor": 100,
-  "largeSlotsPerFloor": 100,
-  "xlargeSlotsPerFloor": 100
-}'
-```
-
-> Success Response: Dummy parking lots created successfully
-
 ### Create a parking lot
 
 ```shell
